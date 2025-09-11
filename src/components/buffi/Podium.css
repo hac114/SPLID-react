@@ -1,0 +1,119 @@
+.podium {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.podium-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  height: 200px;
+}
+
+.podium-place {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+}
+
+.podium-spot {
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 15px 15px 0 0;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  margin-bottom: 0.5rem;
+  z-index: 2;
+}
+
+.medal {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.podium-spot h4 {
+  margin: 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.podium-amount {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #27ae60;
+  margin: 0.5rem 0;
+}
+
+.podium-stats small {
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+.podium-stand {
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+}
+
+.first-stand {
+  height: 120px;
+  background: linear-gradient(135deg, #FFD700 0%, #FFC400 100%);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+.second-stand {
+  height: 90px;
+  background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%);
+  box-shadow: 0 5px 15px rgba(192, 192, 192, 0.3);
+}
+
+.third-stand {
+  height: 70px;
+  background: linear-gradient(135deg, #CD7F32 0%, #A56C2B 100%);
+  box-shadow: 0 5px 15px rgba(205, 127, 50, 0.3);
+}
+
+.podium-place.first .podium-spot {
+  background: linear-gradient(135deg, #FFF9C4 0%, #FFF59D 100%);
+  border: 2px solid #FFD700;
+}
+
+.podium-place.second .podium-spot {
+  background: linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%);
+  border: 2px solid #C0C0C0;
+}
+
+.podium-place.third .podium-spot {
+  background: linear-gradient(135deg, #FFE0B2 0%, #FFCC80 100%);
+  border: 2px solid #CD7F32;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .podium-container {
+    gap: 0.5rem;
+    height: 180px;
+  }
+  
+  .podium-place {
+    min-width: 100px;
+  }
+  
+  .podium-spot {
+    padding: 0.75rem;
+  }
+  
+  .podium-spot h4 {
+    font-size: 0.9rem;
+  }
+  
+  .podium-amount {
+    font-size: 1rem;
+  }
+  
+  .first-stand { height: 100px; }
+  .second-stand { height: 75px; }
+  .third-stand { height: 60px; }
+}

@@ -5,9 +5,10 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;
   color: #333;
+  line-height: 1.6;
 }
 
 .app {
@@ -16,10 +17,45 @@ body {
   flex-direction: column;
 }
 
+.app-layout {
+  display: flex;
+  flex: 1;
+  margin-top: 80px; /* Altezza header */
+}
+
 .main-content {
   flex: 1;
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+}
+
+.coming-soon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 2rem;
+  color: #7f8c8d;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+    margin-top: 70px;
+  }
+  
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .coming-soon {
+    font-size: 1.5rem;
+    height: 200px;
+  }
 }

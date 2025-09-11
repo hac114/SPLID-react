@@ -1,0 +1,193 @@
+.buffi-manager {
+  padding: 2rem 0;
+}
+
+.buffi-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.buffi-header h2 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+}
+
+.buffi-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+.fun-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.fun-stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.fun-stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-title {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  color: #2c3e50;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.full-ranking {
+  margin-top: 3rem;
+}
+
+.full-ranking h3 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ranking-item {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.ranking-item:hover {
+  transform: translateY(-2px);
+}
+
+.rank-position {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.rank-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.rank-medal {
+  font-size: 1.5rem;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info h4 {
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.user-title {
+  color: #667eea;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.user-funfact {
+  color: #7f8c8d;
+  margin: 0;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.user-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.user-stats .stat {
+  text-align: center;
+}
+
+.user-stats .stat-label {
+  display: block;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.user-stats .stat-value {
+  display: block;
+  color: #2c3e50;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.no-expenses {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  color: #7f8c8d;
+}
+
+.no-expenses h3 {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fun-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .ranking-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .user-stats {
+    justify-content: center;
+  }
+
+  .rank-position {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}
