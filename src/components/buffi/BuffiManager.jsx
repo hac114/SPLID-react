@@ -1,10 +1,29 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import './BuffiManager.css';
 import Podium from './Podium';
 
 const BuffiManager = ({ groups, users }) => {
+  const [refreshKey, setRefreshKey] = useState(0);
+  // 👇 Aggiungi questo useEffect per forzare l'aggiornamento
+  useEffect(() => {
+    setRefreshKey(prev => prev + 1);
+  }, [groups, users]);
+
   // Calcola le statistiche degli utenti
   const userStats = useMemo(() => {
+    console.log('Calcolo statistiche...', groups, users);
+    console.log('📊 DETTAGLI Groups:', groups);
+    console.log('👥 DETTAGLI Users:', users);
+    // Log di TUTTE le spese di TUTTI i gruppi
+    groups.forEach(group => {
+    console.log(`--- Gruppo: ${group.name} ---`);
+    group.expenses.forEach(expense => {
+      console.log(`   Spesa: ${expense.description}, €${expense.amount}, Pagante: ${expense.payer}`);
+    });
+  });
+  // 👆 FINE CODICE DI DEBUG
+    
+    
     const stats = users.map(user => {
       let totalSpent = 0;
       let expensesCount = 0;
@@ -39,7 +58,7 @@ const BuffiManager = ({ groups, users }) => {
 
     // Ordina per spesa totale (decrescente)
     return stats.sort((a, b) => b.totalSpent - a.totalSpent);
-  }, [groups, users]);
+  }, [groups, users, refreshKey]);
 
   const topSpenders = userStats.slice(0, 3);
   const allUsers = userStats.slice(3);
@@ -96,7 +115,7 @@ const BuffiManager = ({ groups, users }) => {
   };
 
   return (
-    <div className="buffi-manager">
+    <div key={refreshKey} className="buffi-manager">
       <div className="buffi-header">
         <h2>🏆 Podio dei Buffi</h2>
         <p>La classifica dei più generosi (o sprovveduti!)</p>

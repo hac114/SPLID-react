@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -8,147 +8,31 @@ import SummaryManager from './components/summary/SummaryManager';
 import BuffiManager from './components/buffi/BuffiManager';
 import ExpenseForm from './components/expenses/ExpenseForm';
 import ExpenseList from './components/expenses/ExpenseList';
+import { useInitialData } from './hooks/useInitialData';
 
 function App() {
   const [currentView, setCurrentView] = useState('groups');
   const [selectedGroup, setSelectedGroup] = useState(null);
-  
-  // Dati di esempio per groups con spese più realistiche
-  const [groups, setGroups] = useState([
-    {
-      id: 1,
-      name: "Vacanza Montagna",
-      participants: ["Mario Rossi", "Luigi Verdi", "Giovanna Bianchi", "Sofia Neri"],
-      total: 1250.0, // 200 + 150 + 400 + 500 = 1250
-      description: "Weekend in montagna",
-      expenses: [
-        {
-          id: 1,
-          groupId: 1,
-          amount: 200,
-          description: "Affitto cabina",
-          payer: "Mario Rossi",
-          category: "alloggio",
-          date: "2024-09-10",
-          participants: ["Mario Rossi", "Luigi Verdi", "Giovanna Bianchi", "Sofia Neri"],
-          splitType: "equal"
-        },
-        {
-          id: 2,
-          groupId: 1,
-          amount: 150,
-          description: "Spesa alimentari",
-          payer: "Luigi Verdi", 
-          category: "cibo",
-          date: "2024-09-11",
-          participants: ["Mario Rossi", "Luigi Verdi", "Giovanna Bianchi", "Sofia Neri"],
-          splitType: "equal"
-        },
-        {
-          id: 3,
-          groupId: 1,
-          amount: 400,
-          description: "Impianti di risalita",
-          payer: "Giovanna Bianchi",
-          category: "intrattenimento",
-          date: "2024-09-12",
-          participants: ["Mario Rossi", "Luigi Verdi", "Giovanna Bianchi", "Sofia Neri"],
-          splitType: "equal"
-        },
-        {
-          id: 4,
-          groupId: 1,
-          amount: 500,
-          description: "Cena al rifugio",
-          payer: "Sofia Neri",
-          category: "cibo",
-          date: "2024-09-12",
-          participants: ["Mario Rossi", "Luigi Verdi", "Giovanna Bianchi", "Sofia Neri"],
-          splitType: "equal"
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: "Cena di Compleanno", 
-      participants: ["Marco Rossi", "Anna Verdi", "Luca Bianchi"],
-      total: 480.0, // 120 + 180 + 180 = 480
-      description: "Cena di compleanno di Marco",
-      expenses: [
-        {
-          id: 5,
-          groupId: 2,
-          amount: 120,
-          description: "Antipasti",
-          payer: "Marco Rossi",
-          category: "cibo", 
-          date: "2024-09-12",
-          participants: ["Marco Rossi", "Anna Verdi", "Luca Bianchi"],
-          splitType: "equal"
-        },
-        {
-          id: 6,
-          groupId: 2,
-          amount: 180,
-          description: "Primi piatti",
-          payer: "Anna Verdi",
-          category: "cibo",
-          date: "2024-09-12",
-          participants: ["Marco Rossi", "Anna Verdi", "Luca Bianchi"],
-          splitType: "equal"
-        },
-        {
-          id: 7,
-          groupId: 2,
-          amount: 180,
-          description: "Dolce e bevande",
-          payer: "Luca Bianchi",
-          category: "bevande",
-          date: "2024-09-12",
-          participants: ["Marco Rossi", "Anna Verdi", "Luca Bianchi"],
-          splitType: "equal"
-        }
-      ]
-    }
-  ]);
 
-  // Dati di esempio per users
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Mario Rossi",
-      email: "mario.rossi@email.com",
-      phone: "+39 123 456 7890",
-      groups: ["Vacanza Montagna"],
-      totalSpent: 325.50,
-      totalOwed: 125.75,
-      joinDate: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "Luigi Verdi",
-      email: "luigi.verdi@email.com", 
-      phone: "+39 987 654 3210",
-      groups: ["Vacanza Montagna", "Cena Compleanno"],
-      totalSpent: 480.00,
-      totalOwed: 0.00,
-      joinDate: "2024-02-20"
-    },
-    {
-      id: 3,
-      name: "Giovanna Bianchi",
-      email: "giovanna.bianchi@email.com",
-      phone: "+39 555 123 4567",
-      groups: ["Vacanza Montagna"],
-      totalSpent: 0.00,
-      totalOwed: 87.50,
-      joinDate: "2024-03-10"
-    }
-  ]);
+  const [groups, setGroups, users, setUsers] = useInitialData();
+
+  // 👇 INSERISCI QUI I USEFFECT PER DEBUG
+  useEffect(() => {
+    console.log('BUFFI - Groups updated:', groups);
+  }, [groups]);
+
+  useEffect(() => {
+    console.log('BUFFI - Users updated:', users);
+  }, [users]);
+  // 👆 FINE DEBUG
 
   const handleGroupClick = (group) => {
     setSelectedGroup(group);
     setCurrentView('expenses');
+  };
+
+  const handleCreateGroup = (newGroup) => {
+  setGroups(prevGroups => [...prevGroups, newGroup]);
   };
 
   const handleAddExpense = (newExpense) => {
@@ -186,9 +70,15 @@ function App() {
   const renderCurrentView = () => {
     switch (currentView) {
       case 'groups':
-        return <GroupManager groups={groups} onGroupClick={handleGroupClick} />;
+        return (
+          <GroupManager groups={groups}
+            onGroupClick={handleGroupClick}
+            onCreateGroup={handleCreateGroup}
+            onAddExpense={handleAddExpense}
+          />
+        );
       case 'users':
-        return <UserManager users={users} />;
+        return <UserManager users={users} setUsers={setUsers}/>;
       case 'expenses':
         // Se non c'è un gruppo selezionato, mostra la lista dei gruppi
         if (!selectedGroup) {

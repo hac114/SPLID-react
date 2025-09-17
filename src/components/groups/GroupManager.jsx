@@ -4,26 +4,7 @@ import GroupForm from "./GroupForm";
 import ExpenseForm from "../expenses/ExpenseForm";
 import ExpenseList from "../expenses/ExpenseList";
 
-const GroupManager = () => {
-  const [groups, setGroups] = useState([
-    {
-      id: 1,
-      name: "Vacanza Montagna",
-      participants: ["Mario", "Luigi", "Giovanna", "Sofia"],
-      total: 1250.0,
-      description: "Weekend in montagna",
-      expenses: [],
-    },
-    {
-      id: 2,
-      name: "Cena di Compleanno",
-      participants: ["Marco", "Anna", "Luca", "Elena", "Paolo", "Maria"],
-      total: 480.0,
-      description: "Cena di compleanno di Marco",
-      expenses: [],
-    },
-  ]);
-
+const GroupManager = ({ groups, onGroupClick, onCreateGroup, onAddExpense }) => {
   const [showGroupForm, setShowGroupForm] = useState(false);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showExpenseList, setShowExpenseList] = useState(false);
@@ -37,42 +18,27 @@ const GroupManager = () => {
       expenses: [],
     };
 
-    setGroups([...groups, groupWithDefaults]);
+    // 👇 USA LA FUNZIONE DAL PARENT
+    onCreateGroup(groupWithDefaults);
     setShowGroupForm(false);
     alert(`Gruppo "${newGroup.name}" creato con successo!`);
-  };
+  };    
 
-  const handleAddExpense = (newExpense) => {
-    const updatedGroups = groups.map((group) => {
-      if (group.id === newExpense.groupId) {
-        const updatedExpenses = [...group.expenses, newExpense];
-        const newTotal = updatedExpenses.reduce(
-          (sum, expense) => sum + expense.amount,
-          0
-        );
-
-        return {
-          ...group,
-          expenses: updatedExpenses,
-          total: newTotal,
-        };
-      }
-      return group;
-    });
-
-    setGroups(updatedGroups);
+    const handleAddExpense = (newExpense) => {
+    // 👇 USA LA FUNZIONE DAL PARENT
+    onAddExpense(newExpense);
     setShowExpenseForm(false);
     setSelectedGroup(null);
     alert("Spesa aggiunta con successo!");
   };
-
-  const handleGroupClick = (group, event) => {
-    // Controlla se il click è sul bottone "Aggiungi Spesa"
+ 
+    const handleGroupClick = (group, event) => {
     if (event.target.classList.contains("add-expense-btn")) {
       setSelectedGroup(group);
       setShowExpenseForm(true);
     } else {
-      // Altrimenti mostra la lista delle spese
+      // 👇 USA LA FUNZIONE DAL PARENT PER NAVIGARE ALLE SPESE
+      onGroupClick(group);
       setSelectedGroupForList(group);
       setShowExpenseList(true);
     }
