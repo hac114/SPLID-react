@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./ExpenseForm.css";
 
-const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
+const ExpenseForm = ({ groups, expense, onExpenseAdded, onCancel }) => {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -20,6 +20,23 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
     "regali",
     "altro"
   ];
+
+  // Ottieni i partecipanti del gruppo selezionato
+  const groupParticipants = selectedGroup 
+    ? groups.find(g => g.id === parseInt(selectedGroup))?.participants || []
+    : [];
+
+  // Popola il form se siamo in modalità modifica
+  useEffect(() => {
+    if (expense) {
+      setSelectedGroup(expense.groupId.toString());
+      setAmount(expense.amount.toString());
+      setDescription(expense.description);
+      setPayer(expense.payer);
+      setCategory(expense.category);
+      setDate(expense.date);
+    }
+  }, [expense]);
 
   const getCategoryIcon = (category) => {
     const icons = {
@@ -59,6 +76,12 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
       return;
     }
 
+    // Verifica che il pagante sia nei partecipanti del gruppo
+    if (!groupParticipants.includes(payer)) {
+      alert(`Il pagante "${payer}" non è tra i partecipanti del gruppo!`);
+      return;
+    }  
+
     const selectedGroupData = groups.find(
       (group) => group.id === parseInt(selectedGroup)
     );
@@ -68,8 +91,8 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
       return;
     }
 
-    const newExpense = {
-      id: Date.now(),
+    const expenseData = {
+      id: expense ? expense.id : Date.now(), // Mantieni ID se modifica
       groupId: parseInt(selectedGroup),
       amount: parseFloat(amount),
       description: description.trim(),
@@ -77,22 +100,36 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
       category,
       date,
       participants: selectedGroupData.participants,
-      splitType: "equal", // divisione equa per default
+      splitType: "equal",
     };
 
-    onExpenseAdded(newExpense);
+    onExpenseAdded(expenseData);
 
-    // Reset form
-    setAmount("");
-    setDescription("");
-    setPayer("");
-    setCategory("altro");
+    // Reset form solo se non siamo in modifica
+    if (!expense) {
+      setSelectedGroup("");
+      setAmount("");
+      setDescription("");
+      setPayer("");
+      setCategory("altro");
+      setDate(new Date().toISOString().split("T")[0]);
+    } else {
+        // Se siamo in modifica, chiudi semplicemente il form
+      onCancel();
+    }
+
+  };
+
+  // Reset payer quando cambia il gruppo
+  const handleGroupChange = (e) => {
+    setSelectedGroup(e.target.value);
+    setPayer(""); // Resetta il pagante quando cambia gruppo
   };
 
   return (
     <div className="expense-form-overlay">
       <div className="expense-form-container">
-        <h3>Aggiungi Nuova Spesa</h3>
+        <h3>{expense ? 'Modifica Spesa' : 'Aggiungi Nuova Spesa'}</h3>
 
         <form onSubmit={handleSubmit} className="expense-form">
           <div className="form-group">
@@ -100,8 +137,9 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
             <select
               id="groupSelect"
               value={selectedGroup}
-              onChange={(e) => setSelectedGroup(e.target.value)}
+              onChange={handleGroupChange}
               required
+              disabled={!!expense} // Disabilita se in modifica
             >
               <option value="">Seleziona un gruppo</option>
               {groups.map((group) => (
@@ -110,6 +148,9 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
                 </option>
               ))}
             </select>
+            {expense && (
+              <p className="field-note">Il gruppo non può essere modificato</p>
+            )}
           </div>
 
           <div className="form-row">
@@ -136,7 +177,7 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
-                     {getCategoryIcon(cat)} {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    {getCategoryIcon(cat)} {cat.charAt(0).toUpperCase() + cat.slice(1)}
                   </option>
                 ))}
               </select>
@@ -163,17 +204,21 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
                 value={payer}
                 onChange={(e) => setPayer(e.target.value)}
                 required
+                disabled={!selectedGroup || groupParticipants.length === 0}
               >
                 <option value="">Seleziona chi ha pagato</option>
-                {selectedGroup &&
-                  groups
-                    .find((g) => g.id === parseInt(selectedGroup))
-                    ?.participants.map((participant, index) => (
-                      <option key={index} value={participant}>
-                        {participant}
-                      </option>
-                    ))}
+                {groupParticipants.map((participant, index) => (
+                  <option key={index} value={participant}>
+                    {participant}
+                  </option>
+                ))}
               </select>
+              {!selectedGroup && (
+                <p className="field-note">Seleziona prima un gruppo</p>
+              )}
+              {selectedGroup && groupParticipants.length === 0 && (
+                <p className="field-error">Nessun partecipante in questo gruppo</p>
+              )}
             </div>
 
             <div className="form-group">
@@ -191,8 +236,12 @@ const ExpenseForm = ({ groups, onExpenseAdded, onCancel }) => {
             <button type="button" onClick={onCancel} className="btn-cancel">
               Annulla
             </button>
-            <button type="submit" className="btn-submit">
-              Aggiungi Spesa
+            <button 
+              type="submit" 
+              className="btn-submit"
+              disabled={!selectedGroup || groupParticipants.length === 0}
+            >
+              {expense ? 'Aggiorna' : 'Aggiungi'} Spesa
             </button>
           </div>
         </form>

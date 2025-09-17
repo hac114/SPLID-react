@@ -49,7 +49,7 @@ const UserCard = ({ user, onEdit, onDelete }) => {
 
       <div className="card-footer">
         <span className="join-date">
-          Unitò il {new Date(user.joinDate).toLocaleDateString('it-IT')}
+          Unito il {new Date(user.joinDate).toLocaleDateString('it-IT')}
         </span>
       </div>
     </Card>

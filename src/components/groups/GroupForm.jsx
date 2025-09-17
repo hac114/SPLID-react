@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./GroupForm.css";
 
-const GroupForm = ({ onGroupAdded, onCancel }) => {
-  const [groupName, setGroupName] = useState("");
-  const [description, setDescription] = useState("");
-  const [participants, setParticipants] = useState([""]);
-  const [newParticipant, setNewParticipant] = useState("");
-
+const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) => {
+  const [groupName, setGroupName] = useState(group?.name || "");
+  const [description, setDescription] = useState(group?.description || "");
+  const [participants, setParticipants] = useState(group?.participants || []);
+  const [newParticipant, setNewParticipant] = useState('');
+  
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -15,15 +15,18 @@ const GroupForm = ({ onGroupAdded, onCancel }) => {
       return;
     }
 
-    // Filtra partecipanti vuoti
-    const validParticipants = participants.filter((p) => p.trim() !== "");
+    if (participants.length === 0) {
+      alert("Aggiungi almeno un partecipante!");
+      return;
+    }
 
     const newGroup = {
       id: Date.now(),
       name: groupName.trim(),
       description: description.trim(),
-      participants: validParticipants,
-      totalExpenses: 0,
+      participants: participants,
+      total: 0,
+      expenses: [],
       createdAt: new Date().toISOString(),
     };
 
@@ -32,14 +35,36 @@ const GroupForm = ({ onGroupAdded, onCancel }) => {
     // Reset form
     setGroupName("");
     setDescription("");
-    setParticipants([""]);
+    setParticipants([]);
     setNewParticipant("");
   };
 
   const addParticipant = () => {
-    if (newParticipant.trim()) {
-      setParticipants([...participants, newParticipant.trim()]);
-      setNewParticipant("");
+    const trimmedName = newParticipant.trim();
+    
+    if (!trimmedName) {
+      alert("Inserisci un nome valido per il partecipante!");
+      return;
+    }
+    
+    if (participants.includes(trimmedName)) {
+      alert("Questo partecipante è già stato aggiunto!");
+      return;
+    }
+    
+    // Aggiungi alla rubrica se non esiste
+    const userExists = users.some(user => user.name === trimmedName);
+    if (!userExists && onAddNewUser) {
+      onAddNewUser(trimmedName);
+    }
+    
+    setParticipants([...participants, trimmedName]);
+    setNewParticipant("");
+  };
+
+  const addExistingUser = (userName) => {
+    if (!participants.includes(userName)) {
+      setParticipants([...participants, userName]);
     }
   };
 
@@ -85,43 +110,66 @@ const GroupForm = ({ onGroupAdded, onCancel }) => {
           </div>
 
           <div className="form-group">
-            <label>Partecipanti</label>
-            <div className="participants-input">
-              <input
-                type="text"
-                value={newParticipant}
-                onChange={(e) => setNewParticipant(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Nome partecipante"
-              />
-              <button
-                type="button"
-                onClick={addParticipant}
-                className="add-participant-btn"
+            <label>Partecipanti *</label>
+            
+            {/* Selezione utenti esistenti */}
+            <div className="existing-users-section">
+              <label>Utenti esistenti:</label>
+              <select 
+                onChange={(e) => {
+                  if (e.target.value) {
+                    addExistingUser(e.target.value);
+                  }
+                }}
+                className="users-select"
               >
-                +
-              </button>
+                <option value="">Seleziona utenti esistenti</option>
+                {users.map(user => (
+                  <option key={user.id} value={user.name}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {participants.filter((p) => p.trim() !== "").length > 0 && (
+            {/* Aggiungi nuovo utente */}
+            <div className="new-user-section">
+              <label>Aggiungi nuovo partecipante:</label>
+              <div className="participants-input">
+                <input
+                  type="text"
+                  value={newParticipant}
+                  onChange={(e) => setNewParticipant(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Nome nuovo partecipante"
+                />
+                <button
+                  type="button"
+                  onClick={addParticipant}
+                  className="add-participant-btn"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Lista partecipanti selezionati */}
+            {participants.length > 0 && (
               <div className="participants-list">
                 <h4>Partecipanti aggiunti:</h4>
                 <ul>
-                  {participants.map(
-                    (participant, index) =>
-                      participant.trim() !== "" && (
-                        <li key={index} className="participant-item">
-                          <span>{participant}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeParticipant(index)}
-                            className="remove-participant-btn"
-                          >
-                            ×
-                          </button>
-                        </li>
-                      )
-                  )}
+                  {participants.map((participant, index) => (
+                    <li key={index} className="participant-item">
+                      <span>{participant}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeParticipant(index)}
+                        className="remove-participant-btn"
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}

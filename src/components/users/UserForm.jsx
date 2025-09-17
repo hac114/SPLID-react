@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import './UserForm.css';
 
-const UserForm = ({ onUserAdded, onCancel }) => {
+const UserForm = ({ user, onSave, onCancel }) => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setUserName(user.name || '');
+      setEmail(user.email || '');
+      setPhone(user.phone || '');
+    }
+  }, [user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,28 +23,25 @@ const UserForm = ({ onUserAdded, onCancel }) => {
     }
 
     const newUser = {
-      id: Date.now(),
+      id: user ? user.id : Date.now(), // 👈 MODIFICA: se c'è user usa il suo id
       name: userName.trim(),
       email: email.trim(),
       phone: phone.trim(),
-      groups: [],
-      totalSpent: 0,
-      totalOwed: 0,
-      joinDate: new Date().toISOString()
+      groups: user ? user.groups : [], // 👈 MODIFICA: mantieni i gruppi esistenti
+      totalSpent: user ? user.totalSpent : 0, // 👈 MODIFICA: mantieni totalSpent
+      totalOwed: user ? user.totalOwed : 0, // 👈 MODIFICA: mantieni totalOwed
+      joinDate: user ? user.joinDate : new Date().toISOString().split('T')[0] // 👈 MODIFICA: formato data
     };
 
-    onUserAdded(newUser);
+    onSave(newUser); // 👈 MODIFICA: cambia onUserAdded in onSave
     
-    // Reset form
-    setUserName('');
-    setEmail('');
-    setPhone('');
-  };
+    // 👇 SPOSTA IL RESET FUORI (viene gestito dal componente padre)
+  };   
 
   return (
     <div className="user-form-overlay">
       <div className="user-form-container">
-        <h3>Aggiungi Nuovo Utente</h3>
+        <h3>{user ? 'Modifica Utente' : 'Aggiungi Nuovo Utente'}</h3>
         
         <form onSubmit={handleSubmit} className="user-form">
           <div className="form-group">
@@ -44,7 +49,7 @@ const UserForm = ({ onUserAdded, onCancel }) => {
             <input
               type="text"
               id="userName"
-              value={userName}
+              value={userName}             
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Nome e cognome"
               required
@@ -78,7 +83,7 @@ const UserForm = ({ onUserAdded, onCancel }) => {
               Annulla
             </button>
             <button type="submit" className="btn-submit">
-              Aggiungi Utente
+              {user ? 'Aggiorna' : 'Aggiungi'} Utente
             </button>
           </div>
         </form>
