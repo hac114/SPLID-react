@@ -115,10 +115,15 @@ const BuffiManager = ({ groups, users }) => {
         ))}
       </div>
 
-      {/* Podio */}
-      {topSpenders.length > 0 && (
-        <Podium topUsers={topSpenders} />
-      )}
+    {/* SPAZIO FORZATO sopra il podio */}
+  <div style={{ height: '50px', minHeight: '50px' }}></div>
+  
+  {/* Podio */}
+  {topSpenders.length > 0 && (
+    <div className="podium-section">
+      <Podium topUsers={topSpenders} />
+    </div>
+  )}
 
       {/* Classifica Completa */}
       <div className="full-ranking">

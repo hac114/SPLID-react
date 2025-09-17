@@ -84,10 +84,9 @@ const GroupManager = () => {
     setShowExpenseForm(true);
   };
 
-  return (
+  return (    
     <div className="group-manager">
       <h2>Gestione Gruppi</h2>
-
       <div className="groups-grid">
         {groups.map((group) => (
           <div

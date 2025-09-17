@@ -1,10 +1,13 @@
 .buffi-manager {
   padding: 2rem 0;
+  position: relative;
 }
 
 .buffi-header {
   text-align: center;
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 5;
 }
 
 .buffi-header h2 {
@@ -22,7 +25,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2rem; /* Ripristinato a 2rem */
+  position: relative;
+  z-index: 5;
 }
 
 .fun-stat-card {
@@ -61,8 +66,25 @@
   font-size: 1.2rem;
 }
 
+/* SEZIONE PODIO - SOLUZIONE DEFINITIVA */
+.podium-section {
+  margin: 0; /* Rimosso margin */
+  padding: 3rem 0; /* Aggiunto padding invece di margin */
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(to bottom, transparent 0%, transparent 30%, #f8f9fa 30%, #f8f9fa 100%);
+}
+
+.podium-container {
+  position: relative;
+  margin-top: -5px; /* Solleva il podio */
+  padding-top: 5px; /* Compensa il margin negativo */
+}
+
 .full-ranking {
-  margin-top: 3rem;
+  margin-top: 2rem; /* Ridotto */
+  position: relative;
+  z-index: 5;
 }
 
 .full-ranking h3 {
@@ -174,6 +196,16 @@
 @media (max-width: 768px) {
   .fun-stats {
     grid-template-columns: 1fr;
+  }
+  
+  .podium-section {
+    padding: 2rem 0;
+    background: linear-gradient(to bottom, transparent 0%, transparent 20%, #f8f9fa 20%, #f8f9fa 100%);
+  }
+  
+  .podium-container {
+    margin-top: -30px;
+    padding-top: 30px;
   }
   
   .ranking-item {

@@ -1,43 +1,74 @@
 .user-card {
   background: white;
-  border-radius: 15px;
-  padding: 1.5rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-left: 4px solid #667eea;
+  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+  height: 100%;
+  min-width: 280px;
+  padding: 1rem;
+  position: relative;
+  /* Reset forzato */
+  box-sizing: border-box !important;
+  overflow: visible !important;
 }
 
 .user-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
-.user-header {
+/* Header compatto */
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #e9ecef;
+  gap: 0.5rem;
+  /* Reset */
+  min-width: 0 !important;
 }
 
-.user-header h3 {
+.card-title {
   color: #2c3e50;
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+  line-height: 1.2;
+  word-break: break-word;
+  min-width: 0;
+  /* Reset */
+  overflow: visible !important;
 }
 
-.user-actions {
+.card-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  margin-top: -0.2rem;
+  /* Reset */
+  min-width: 0 !important;
 }
 
 .edit-btn, .delete-btn {
   background: none;
   border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
+  padding: 0.3rem;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.3s ease;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  /* Reset */
+  min-width: 0 !important;
+  overflow: visible !important;
 }
 
 .edit-btn:hover {
@@ -48,83 +79,195 @@
   background: #ffebee;
 }
 
-.user-details {
-  margin-bottom: 1rem;
+/* Body ottimizzato */
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 0;
+  /* Reset */
+  min-width: 0 !important;
+  overflow: visible !important;
 }
 
 .user-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
+  gap: 0.5rem;
+  /* Reset */
+  min-width: 0 !important;
 }
 
 .info-label {
-  font-weight: 500;
-  color: #7f8c8d;
+  font-weight: 600;
+  color: #6c757d;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  min-width: 40px;
+  /* Reset */
+  overflow: visible !important;
 }
 
 .info-value {
   color: #2c3e50;
   font-weight: 500;
+  font-size: 0.75rem;
+  text-align: right;
+  word-break: break-word;
+  flex: 1;
+  min-width: 0;
+  /* Reset */
+  overflow: visible !important;
 }
 
+/* Statistics - CON GIALLO */
 .user-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  border-top: 1px solid #e9ecef;
+  /* Reset */
+  min-width: 0 !important;
+  overflow: visible !important;
 }
 
 .stat {
-  text-align: center;
-  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.3rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 8px;
+  border-radius: 6px;
   color: white;
+  min-height: 45px;
+  text-align: center;
+  /* Reset */
+  min-width: 0 !important;
+  overflow: visible !important;
 }
 
 .stat-label {
   display: block;
-  font-size: 0.8rem;
-  opacity: 0.9;
+  font-size: 0.65rem;
+  font-weight: 500;
   margin-bottom: 0.2rem;
+  line-height: 1;
+  opacity: 0.9;
+  /* COLORE GIALLO */
+  color: #ffd700 !important;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
 }
 
 .stat-value {
   display: block;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  line-height: 1;
+  /* Reset */
+  overflow: visible !important;
 }
 
-.user-footer {
+/* Footer compatto */
+.card-footer {
+  padding-top: 0.8rem;
+  border-top: 1px solid #e9ecef;
   text-align: center;
-  padding-top: 1rem;
-  border-top: 1px solid #eee;
+  margin-top: auto;
+  /* Reset */
+  min-width: 0 !important;
+  overflow: visible !important;
 }
 
 .join-date {
-  font-size: 0.8rem;
-  color: #7f8c8d;
+  font-size: 0.7rem;
+  color: #6c757d;
   font-style: italic;
 }
 
-/* Responsive */
+/* DEBUG: Forza la visualizzazione completa */
+.user-stats > * {
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.stat:nth-child(3) {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
+  .user-card {
+    min-width: 260px;
+    padding: 0.8rem;
+    min-height: 240px;
+  }
+  
   .user-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
   
-  .user-header {
-    flex-direction: column;
-    gap: 0.5rem;
+  .stat {
+    min-width: 0 !important;
+    padding: 0.4rem 0.2rem;
   }
   
-  .user-actions {
-    align-self: flex-end;
+  .stat-label {
+    font-size: 0.6rem;
+  }
+  
+  .stat-value {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-card {
+    min-width: 240px;
+  }
+  
+  .user-stats {
+    grid-template-columns: repeat(3, minmax(60px, 1fr)) !important;
+    gap: 0.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.55rem;
+  }
+  
+  .stat-value {
+    font-size: 0.7rem;
+  }
+}
+
+/* Soluzione estrema: layout orizzontale */
+@media (max-width: 360px) {
+  .user-stats {
+    grid-template-columns: 1fr !important;
+    gap: 0.3rem;
+  }
+  
+  .stat {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    padding: 0.4rem 0.8rem !important;
+    min-height: 35px;
+  }
+  
+  .stat-label {
+    margin-bottom: 0 !important;
+    font-size: 0.6rem;
+    color: #ffd700 !important;
+  }
+  
+  .stat-value {
+    font-size: 0.75rem;
   }
 }

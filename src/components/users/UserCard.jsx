@@ -1,21 +1,22 @@
+import Card from '../common/Card';
 import './UserCard.css';
 
 const UserCard = ({ user, onEdit, onDelete }) => {
   return (
-    <div className="user-card">
-      <div className="user-header">
-        <h3>{user.name}</h3>
-        <div className="user-actions">
-          <button onClick={() => onEdit(user)} className="edit-btn">
+    <Card className="user-card" hoverable={true}>
+      <div className="card-header">
+        <h3 className="card-title">{user.name}</h3>
+        <div className="card-actions">
+          <button onClick={() => onEdit(user)} className="edit-btn" title="Modifica">
             ✏️
           </button>
-          <button onClick={() => onDelete(user.id)} className="delete-btn">
+          <button onClick={() => onDelete(user.id)} className="delete-btn" title="Elimina">
             🗑️
           </button>
         </div>
       </div>
 
-      <div className="user-details">
+      <div className="card-body">
         {user.email && (
           <div className="user-info">
             <span className="info-label">Email:</span>
@@ -25,7 +26,7 @@ const UserCard = ({ user, onEdit, onDelete }) => {
         
         {user.phone && (
           <div className="user-info">
-            <span className="info-label">Telefono:</span>
+            <span className="info-label">Tel:</span>
             <span className="info-value">{user.phone}</span>
           </div>
         )}
@@ -46,12 +47,12 @@ const UserCard = ({ user, onEdit, onDelete }) => {
         </div>
       </div>
 
-      <div className="user-footer">
+      <div className="card-footer">
         <span className="join-date">
           Unitò il {new Date(user.joinDate).toLocaleDateString('it-IT')}
         </span>
       </div>
-    </div>
+    </Card>
   );
 };
 
