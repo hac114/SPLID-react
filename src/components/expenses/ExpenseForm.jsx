@@ -51,22 +51,7 @@ const ExpenseForm = ({ groups, expense, onExpenseAdded, onCancel }) => {
       altro: "📦"
     };
     return icons[category] || "📦";
-  };
-
-  /* const getCategoryColor = (category) => {
-    const colors = {
-      cibo: "#FF6B6B",
-      bevande: "#4ECDC4", 
-      trasporti: "#45B7D1",
-      alloggio: "#96CEB4",
-      intrattenimento: "#FFEAA7",
-      shopping: "#DDA0DD",
-      salute: "#98D8C8",
-      regali: "#F7DC6F",
-      altro: "#BDC3C7"
-    };
-    return colors[category] || "#BDC3C7";
-  }; */
+  };  
 
   const handleSubmit = (e) => {
     e.preventDefault();
