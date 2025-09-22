@@ -192,7 +192,7 @@
   font-style: italic;
 }
 
-/* DEBUG: Forza la visualizzazione completa */
+/* Forza la visualizzazione completa */
 .user-stats > * {
   min-width: 0 !important;
   overflow: visible !important;
@@ -202,7 +202,6 @@
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .user-card {
     min-width: 260px;
@@ -247,7 +246,7 @@
   }
 }
 
-/* Soluzione estrema: layout orizzontale */
+
 @media (max-width: 360px) {
   .user-stats {
     grid-template-columns: 1fr !important;

@@ -21,7 +21,7 @@ const ExpenseForm = ({ groups, expense, onExpenseAdded, onCancel }) => {
     "altro"
   ];
 
-  // Ottieni i partecipanti del gruppo selezionato
+  // Per ottenere i partecipanti del gruppo selezionato
   const groupParticipants = selectedGroup 
     ? groups.find(g => g.id === parseInt(selectedGroup))?.participants || []
     : [];
@@ -53,7 +53,7 @@ const ExpenseForm = ({ groups, expense, onExpenseAdded, onCancel }) => {
     return icons[category] || "📦";
   };
 
-  const getCategoryColor = (category) => {
+  /* const getCategoryColor = (category) => {
     const colors = {
       cibo: "#FF6B6B",
       bevande: "#4ECDC4", 
@@ -66,7 +66,7 @@ const ExpenseForm = ({ groups, expense, onExpenseAdded, onCancel }) => {
       altro: "#BDC3C7"
     };
     return colors[category] || "#BDC3C7";
-  };
+  }; */
 
   const handleSubmit = (e) => {
     e.preventDefault();

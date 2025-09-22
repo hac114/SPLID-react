@@ -154,7 +154,6 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .footer-content {
     grid-template-columns: 1fr;

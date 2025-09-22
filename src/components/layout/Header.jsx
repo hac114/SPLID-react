@@ -10,16 +10,14 @@ const Header = ({ currentView, onViewChange }) => {
   ];
 
   return (
-    <header className="app-header">
-      {/* Sezione titolo */}
+    <header className="app-header">     
       <div className="header-top">
         <div className="header-content">
           <h1>💰 Splid</h1>
           <p>La soluzione semplice per dividere le spese</p>
         </div>
       </div>
-
-      {/* Navbar integrata */}
+      
       <nav className="header-nav">
         <div className="nav-container">
           {menuItems.map((item) => (

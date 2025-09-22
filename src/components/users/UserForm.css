@@ -104,7 +104,6 @@
   }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .user-form-container {
     padding: 1.5rem;

@@ -18,7 +18,7 @@ function App() {
   const [preFillUserName, setPreFillUserName] = useState('');
   const [editingGroupId, setEditingGroupId] = useState(null);
 
-  // 👇 INSERISCI QUI I USEFFECT PER DEBUG
+  // DEBUG
   useEffect(() => {
     console.log('BUFFI - Groups updated:', groups);
   }, [groups]);
@@ -29,10 +29,8 @@ function App() {
 
   useEffect(() => {
     console.log('App - preFillUserName state:', preFillUserName);
-  }, [preFillUserName]);
-  // 👆 FINE DEBUG  
+  }, [preFillUserName]);   
 
-  // 👇 Aggiungi questa funzione dopo gli useEffect di debug
   const validateExpense = (expense) => {
     const group = groups.find(g => g.id === expense.groupId);
     if (!group) return "Gruppo non trovato";
@@ -42,7 +40,6 @@ function App() {
       return `Il pagante "${expense.payer}" non è nei partecipanti del gruppo`;
     }    
     
-    // 👇 MODIFICA QUESTA PARTE - Controllo più flessibile
     const userExists = users.some(user => 
       user.name.toLowerCase() === expense.payer.toLowerCase().trim()
     );
@@ -51,7 +48,7 @@ function App() {
       return `L'utente "${expense.payer}" non esiste nella rubrica`;
     }
     
-    return null; // Tutto ok
+    return null;
   };  
 
   const handleGroupClick = (group) => {
@@ -60,11 +57,10 @@ function App() {
   };
 
   const handleCreateGroup = (newGroup) => {
-    console.log('Creazione gruppo in App:', newGroup); // 👈 Debug
+    console.log('Creazione gruppo in App:', newGroup); // Debug
     setGroups(prevGroups => [...prevGroups, newGroup]);
   };
-
-  // Dopo handleCreateGroup, aggiungi:
+  
   const handleUpdateGroup = (updatedGroup) => {
     setGroups(prevGroups => 
       prevGroups.map(group => group.id === updatedGroup.id ? updatedGroup : group)
@@ -78,9 +74,7 @@ function App() {
   };
 
   const handleEditGroup = (group) => {
-    console.log('Modifica gruppo:', group);
-    // Qui dovresti avere una logica per impostare il gruppo in modifica
-    // Esempio: setEditingGroup(group) e aprire il form di modifica
+    console.log('Modifica gruppo:', group);    
     alert(`Funzione di modifica gruppo per: ${group.name}`);
   };
 
@@ -107,15 +101,14 @@ function App() {
       })
     );
     setCurrentView('expenses');
-  };  
-
-    // 👇 Aggiungi queste funzioni dopo handleAddExpense
+  };
+    
   const handleCreateUser = (newUser) => {
     console.log('Creazione utente in App:', newUser);
     setUsers(prevUsers => [...prevUsers, newUser]);
-    setPreFillUserName(''); // 👈 RESETTA IL PRE-FILL DOPO LA CREAZIONE 
+    setPreFillUserName(''); // RESETTA IL PRE-FILL DOPO LA CREAZIONE 
     
-     // 👇 SE C'ERA UN GRUPPO IN MODIFICA, TORNA AD ESSO
+     // SE C'ERA UN GRUPPO IN MODIFICA, DOVREBBE TORNARE AD ESSO
     if (editingGroupId) {
       setCurrentView('groups');
       setEditingGroupId(null);
@@ -165,14 +158,14 @@ function App() {
           );
           const total = updatedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
           
-          // 👇 CREA UN NUOVO OGGETTO per forzare il re-render
+          // CREA UN NUOVO OGGETTO per forzare il re-render
           return {
             ...group,
             expenses: updatedExpenses, // Questo è un nuovo array
             total: total
           };
         }
-        return group; // 👈 Questo mantiene lo stesso riferimento per gli altri gruppi
+        return group; // Questo mantiene lo stesso riferimento per gli altri gruppi
       })
     );
   };
@@ -184,7 +177,7 @@ function App() {
           const updatedExpenses = group.expenses.filter(expense => expense.id !== expenseId);
           const total = updatedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
           
-          // 👇 CREA UN NUOVO OGGETTO
+          // CREA UN NUOVO OGGETTO
           return {
             ...group,
             expenses: updatedExpenses, // Nuovo array
@@ -216,10 +209,10 @@ function App() {
             onDeleteGroup={handleDeleteGroup}
             onAddExpense={handleAddExpense}
             onAddNewUser={handleAddNewUser}
-            onNavigateToUsers={(userName, groupId) => { // 👈 DEVE ACCETTARE IL PARAMETRO
+            onNavigateToUsers={(userName, groupId) => { 
               console.log('onNavigateToUsers called with:', userName);
               setCurrentView('users');
-              setPreFillUserName(userName); // 👈 DEVE IMPOSTARE LO STATE
+              setPreFillUserName(userName);
               setEditingGroupId(groupId);
             }}
           />

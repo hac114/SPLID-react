@@ -23,7 +23,7 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser, on
     }
 
     const newGroup = {
-      id: group?.id || Date.now(), // 👈 Mantieni ID se modifica
+      id: group?.id || Date.now(),
       name: groupName.trim(),
       description: description.trim(),
       participants: participants,
@@ -56,7 +56,7 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser, on
       return;
     }
     
-    // 👇 CORREGGI: Verifica se l'utente esiste
+    // Verifica se l'utente esiste
     const userExists = users.some(user => user.name === trimmedName);
     
     if (!userExists) {
@@ -113,7 +113,7 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser, on
                   onClick={() => {
                     onCancel(); // Chiudi il form gruppo
                     if (onNavigateToUsers) {
-                      onNavigateToUsers(pendingParticipant); // 👈 Reindirizza alla sezione utenti
+                      onNavigateToUsers(pendingParticipant); // Reindirizza alla sezione utenti
                     } else {
                       console.error('onNavigateToUsers non è definita!');
                       alert(`Vai alla sezione utenti per creare: ${pendingParticipant}`);

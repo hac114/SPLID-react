@@ -8,7 +8,7 @@ const UserManager = ({ users, onCreateUser, onUpdateUser, onDeleteUser, preFillU
   const [editingUser, setEditingUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 👇 DEBUG - Controlla se la prop arriva
+  // DEBUG - Controlla se la prop arriva
   console.log('UserManager - preFillUserName:', preFillUserName);
 
   useEffect(() => {
@@ -95,7 +95,7 @@ const UserManager = ({ users, onCreateUser, onUpdateUser, onDeleteUser, preFillU
           onCancel={() => {
             setShowUserForm(false);
           }}
-          preFillName={preFillUserName} // 👈 PASSALA AL FORM
+          preFillName={preFillUserName}
         />
       )}
 

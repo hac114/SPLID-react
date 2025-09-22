@@ -10,7 +10,7 @@ const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpe
   const [refreshKey, setRefreshKey] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 👇 DEBUG
+  // DEBUG
   useEffect(() => {
     console.log('ExpenseList - Group object changed:', group);
   }, [group]);
@@ -69,7 +69,7 @@ const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpe
     ? group.expenses 
     : group.expenses.filter(expense => expense.category === selectedCategory);
 
-  // 👇 FILTRO PER RICERCA
+  // FILTRO PER RICERCA
   const searchedExpenses = filteredExpenses.filter(expense =>
     expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     expense.payer.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -107,7 +107,7 @@ const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpe
           </div>
         </div>
 
-        {/* 👇 SEARCH BAR */}
+        {/* SEARCH BAR */}
         <div className="expense-search-box">
           <input
             type="text"

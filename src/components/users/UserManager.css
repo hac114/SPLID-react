@@ -97,8 +97,6 @@
   animation: searchPulse 0.5s ease;
 }
 
-
-/* Responsive */
 @media (max-width: 768px) {
   .user-manager-header {
     flex-direction: column;

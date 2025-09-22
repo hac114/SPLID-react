@@ -90,7 +90,6 @@
   border: 2px solid #CD7F32;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .podium-container {
     gap: 0.5rem;

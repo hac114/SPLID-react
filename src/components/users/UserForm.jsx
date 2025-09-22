@@ -6,7 +6,7 @@ const UserForm = ({ user, onSave, onCancel, preFillName }) => {
   const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
 
-  // 👇 EFFETTO PER PRE-COMPILARE AUTOMATICAMENTE
+  // PER PRE-COMPILARE AUTOMATICAMENTE
   useEffect(() => {
     if (preFillName && !user) {
       setName(preFillName);
@@ -33,19 +33,17 @@ const UserForm = ({ user, onSave, onCancel, preFillName }) => {
     }
 
     const newUser = {
-      id: user ? user.id : Date.now(), // 👈 MODIFICA: se c'è user usa il suo id
+      id: user ? user.id : Date.now(), // MODIFICA: se c'è user usa il suo id
       name: name.trim(),
       email: email.trim(),
       phone: phone.trim(),
-      groups: user ? user.groups : [], // 👈 MODIFICA: mantieni i gruppi esistenti
-      totalSpent: user ? user.totalSpent : 0, // 👈 MODIFICA: mantieni totalSpent
-      totalOwed: user ? user.totalOwed : 0, // 👈 MODIFICA: mantieni totalOwed
-      joinDate: user ? user.joinDate : new Date().toISOString().split('T')[0] // 👈 MODIFICA: formato data
+      groups: user ? user.groups : [], // MODIFICA: mantieni i gruppi esistenti
+      totalSpent: user ? user.totalSpent : 0, // MODIFICA: mantieni totalSpent
+      totalOwed: user ? user.totalOwed : 0, // MODIFICA: mantieni totalOwed
+      joinDate: user ? user.joinDate : new Date().toISOString().split('T')[0] // MODIFICA: formato data
     };
 
-    onSave(newUser); // 👈 MODIFICA: cambia onUserAdded in onSave
-    
-    // 👇 SPOSTA IL RESET FUORI (viene gestito dal componente padre)
+    onSave(newUser); // MODIFICA: cambia onUserAdded in onSave    
   };   
 
   return (

@@ -4,7 +4,7 @@ import Podium from './Podium';
 
 const BuffiManager = ({ groups, users }) => {
   const [refreshKey, setRefreshKey] = useState(0);
-  // 👇 Aggiungi questo useEffect per forzare l'aggiornamento
+  // useEffect per forzare l'aggiornamento
   useEffect(() => {
     setRefreshKey(prev => prev + 1);
   }, [groups, users]);
@@ -20,9 +20,7 @@ const BuffiManager = ({ groups, users }) => {
     group.expenses.forEach(expense => {
       console.log(`   Spesa: ${expense.description}, €${expense.amount}, Pagante: ${expense.payer}`);
     });
-  });
-  // 👆 FINE CODICE DI DEBUG
-    
+  });    
     
     const stats = users.map(user => {
       let totalSpent = 0;
