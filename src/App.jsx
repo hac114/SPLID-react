@@ -13,8 +13,10 @@ import { useInitialData } from './hooks/useInitialData';
 function App() {
   const [currentView, setCurrentView] = useState('groups');
   const [selectedGroup, setSelectedGroup] = useState(null);
-
   const [groups, setGroups, users, setUsers] = useInitialData();
+  const [groupSearchTerm, setGroupSearchTerm] = useState('');
+  const [preFillUserName, setPreFillUserName] = useState('');
+  const [editingGroupId, setEditingGroupId] = useState(null);
 
   // 👇 INSERISCI QUI I USEFFECT PER DEBUG
   useEffect(() => {
@@ -24,6 +26,10 @@ function App() {
   useEffect(() => {
     console.log('BUFFI - Users updated:', users);
   }, [users]);
+
+  useEffect(() => {
+    console.log('App - preFillUserName state:', preFillUserName);
+  }, [preFillUserName]);
   // 👆 FINE DEBUG  
 
   // 👇 Aggiungi questa funzione dopo gli useEffect di debug
@@ -34,15 +40,8 @@ function App() {
     // Verifica che il pagante sia nei partecipanti del gruppo
     if (!group.participants.includes(expense.payer)) {
       return `Il pagante "${expense.payer}" non è nei partecipanti del gruppo`;
-    }
+    }    
     
-    /* // Verifica che il pagante esista nella rubrica utenti
-    if (!users.some(user => user.name === expense.payer)) {
-      return `L'utente "${expense.payer}" non esiste nella rubrica`;
-    }
-    
-    return null; // Tutto ok */
-
     // 👇 MODIFICA QUESTA PARTE - Controllo più flessibile
     const userExists = users.some(user => 
       user.name.toLowerCase() === expense.payer.toLowerCase().trim()
@@ -78,6 +77,13 @@ function App() {
     }
   };
 
+  const handleEditGroup = (group) => {
+    console.log('Modifica gruppo:', group);
+    // Qui dovresti avere una logica per impostare il gruppo in modifica
+    // Esempio: setEditingGroup(group) e aprire il form di modifica
+    alert(`Funzione di modifica gruppo per: ${group.name}`);
+  };
+
   const handleAddExpense = (newExpense) => {
     const validationError = validateExpense(newExpense);
     if (validationError) {
@@ -105,7 +111,15 @@ function App() {
 
     // 👇 Aggiungi queste funzioni dopo handleAddExpense
   const handleCreateUser = (newUser) => {
-    setUsers(prevUsers => [...prevUsers, { ...newUser, id: Date.now() }]);
+    console.log('Creazione utente in App:', newUser);
+    setUsers(prevUsers => [...prevUsers, newUser]);
+    setPreFillUserName(''); // 👈 RESETTA IL PRE-FILL DOPO LA CREAZIONE 
+    
+     // 👇 SE C'ERA UN GRUPPO IN MODIFICA, TORNA AD ESSO
+    if (editingGroupId) {
+      setCurrentView('groups');
+      setEditingGroupId(null);
+    }
   };
 
   const handleUpdateUser = (updatedUser) => {
@@ -116,34 +130,13 @@ function App() {
 
   const handleDeleteUser = (userId) => {
     setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-  };
+  };  
   
-  
-  // Aggiungi queste funzioni mancanti dopo handleDeleteUser
-  const handleBackToExpenses = () => {
-    setCurrentView('expenses');
-  };
-
-  const handleBackToGroups = () => {
-    setCurrentView('groups');
-    setSelectedGroup(null);
-  };
-
   const handleAddExpenseClick = () => {
     setCurrentView('addExpense');
-  };
+  }; 
 
- /*  const handleBackToExpenses = () => {
-    setCurrentView('expenses');
-  };
-
-  const handleBackToGroups = () => {
-    setCurrentView('groups');
-    setSelectedGroup(null);
-  }; */
-
-  const handleAddNewUser = (userName) => {
-    // Verifica che l'utente non esista già
+  const handleAddNewUser = (userName) => {    
     if (users.some(user => user.name === userName)) {
       return;
     }
@@ -172,13 +165,14 @@ function App() {
           );
           const total = updatedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
           
+          // 👇 CREA UN NUOVO OGGETTO per forzare il re-render
           return {
             ...group,
-            expenses: updatedExpenses,
+            expenses: updatedExpenses, // Questo è un nuovo array
             total: total
           };
         }
-        return group;
+        return group; // 👈 Questo mantiene lo stesso riferimento per gli altri gruppi
       })
     );
   };
@@ -190,9 +184,10 @@ function App() {
           const updatedExpenses = group.expenses.filter(expense => expense.id !== expenseId);
           const total = updatedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
           
+          // 👇 CREA UN NUOVO OGGETTO
           return {
             ...group,
-            expenses: updatedExpenses,
+            expenses: updatedExpenses, // Nuovo array
             total: total
           };
         }
@@ -217,20 +212,27 @@ function App() {
             users={users}
             onGroupClick={handleGroupClick}
             onCreateGroup={handleCreateGroup}
-            onUpdateGroup={handleUpdateGroup} // 👈 Aggiungi questa
-            onDeleteGroup={handleDeleteGroup} // 👈 E questa
+            onUpdateGroup={handleUpdateGroup}
+            onDeleteGroup={handleDeleteGroup}
             onAddExpense={handleAddExpense}
             onAddNewUser={handleAddNewUser}
+            onNavigateToUsers={(userName, groupId) => { // 👈 DEVE ACCETTARE IL PARAMETRO
+              console.log('onNavigateToUsers called with:', userName);
+              setCurrentView('users');
+              setPreFillUserName(userName); // 👈 DEVE IMPOSTARE LO STATE
+              setEditingGroupId(groupId);
+            }}
           />
         );
       case 'users':
+        console.log('Rendering UserManager with preFillUserName:', preFillUserName);
         return (
           <UserManager
-            users={users}
-            //setUsers={setUsers}
+            users={users}            
             onCreateUser={handleCreateUser}
             onUpdateUser={handleUpdateUser}
-            onDeleteUser={handleDeleteUser}            
+            onDeleteUser={handleDeleteUser}
+            preFillUserName={preFillUserName}            
           />
         );
       case 'expenses':
@@ -238,17 +240,95 @@ function App() {
         if (!selectedGroup) {
           return (
             <div className="group-selection">
-              <h2>Seleziona un Gruppo per vedere le Spese</h2>
-              <div className="groups-list">
-                {groups.map((group) => (
-                  <div key={group.id} className="group-card" onClick={() => handleGroupClick(group)}>
-                    <h3>{group.name}</h3>
-                    <p>{group.participants.length} partecipanti</p>
-                    <p>{group.expenses.length} spese</p>
-                    <p>Totale: €{group.total.toFixed(2)}</p>
-                  </div>
-                ))}
+              <div className="group-selection-header">
+                <h2>Seleziona un Gruppo per vedere le Spese</h2>
+                <div className="search-box">
+                  <input
+                    type="text"
+                    placeholder="Cerca gruppi per nome, descrizione o partecipante..."
+                    value={groupSearchTerm}
+                    onChange={(e) => setGroupSearchTerm(e.target.value)}
+                    className="search-input"
+                  />
+                </div>
               </div>
+              
+              <div className="groups-grid">
+                {groups
+                  .filter(group => 
+                    group.name.toLowerCase().includes(groupSearchTerm.toLowerCase()) ||
+                    group.description?.toLowerCase().includes(groupSearchTerm.toLowerCase()) ||
+                    group.participants.some(participant => 
+                      participant.toLowerCase().includes(groupSearchTerm.toLowerCase())
+                    )
+                  )
+                  .map((group) => (
+                    <div key={group.id} className="group-card" onClick={() => handleGroupClick(group)}>
+                      <div className="card-header">
+                        <h3>{group.name}</h3>
+                        <div className="group-actions">
+                          <button
+                            className="edit-group-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditGroup(group);
+                            }}
+                            title="Modifica gruppo"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className="delete-group-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteGroup(group.id);
+                            }}
+                            title="Elimina gruppo"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+
+                      {group.description && (
+                        <p className="group-description">{group.description}</p>
+                      )}
+                      
+                      <div className="participants-preview">
+                        {group.participants.slice(0, 3).map((participant, index) => (
+                          <span key={index} className="participant-tag">
+                            {participant}
+                          </span>
+                        ))}
+                        {group.participants.length > 3 && (
+                          <span className="more-participants">
+                            +{group.participants.length - 3} altri
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="group-stats">
+                        <span className="group-total">
+                          Totale: € {group.total.toFixed(2)}
+                        </span>
+                        <span className="expenses-count">
+                          {group.expenses.length} spese
+                        </span>
+                      </div>
+
+                      <button
+                        className="view-expenses-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleGroupClick(group);
+                        }}
+                      >
+                        👁️ Vedi Spese
+                      </button>
+                    </div>
+                  ))}
+              </div>
+
               {groups.length === 0 && (
                 <div className="no-groups-message">
                   <p>Nessun gruppo disponibile</p>
@@ -258,10 +338,11 @@ function App() {
             </div>
           );
         }
-        
+              
         // Se c'è un gruppo selezionato, mostra l'ExpenseList
         return (
-          <ExpenseList 
+          <ExpenseList
+            key={`${selectedGroup.id}-${selectedGroup.expenses.length}`} // 👈 KEY UNICA 
             group={selectedGroup} 
             onClose={() => setSelectedGroup(null)}
             onAddExpense={handleAddExpenseClick}            

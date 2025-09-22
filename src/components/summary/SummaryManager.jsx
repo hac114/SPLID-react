@@ -4,6 +4,7 @@ import BalanceCard from './BalanceCard';
 
 const SummaryManager = ({ groups, users }) => {
   const [settledBalances, setSettledBalances] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');  
 
   // Calcola i saldi tra utenti
   const calculateBalances = useMemo(() => {
@@ -82,6 +83,11 @@ const SummaryManager = ({ groups, users }) => {
     )
   );
 
+  const filteredActiveBalances = activeBalances.filter(balance =>
+    balance.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    balance.to.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const totalBalance = activeBalances.reduce((sum, balance) => sum + balance.amount, 0);
 
   return (
@@ -100,15 +106,32 @@ const SummaryManager = ({ groups, users }) => {
         </div>
       </div>
 
-      {activeBalances.length === 0 ? (
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Cerca utenti per nome..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+      </div>
+
+      {filteredActiveBalances.length === 0 ? (
         <div className="no-balances">
-          <h3>🎉 Tutti i conti sono in regola!</h3>
-          <p>Non ci sono debiti pendenti tra gli utenti</p>
+          <h3>
+            {searchTerm ? '🔍 Nessun risultato trovato' : '🎉 Tutti i conti sono in regola!'}
+          </h3>
+          <p>
+            {searchTerm 
+              ? 'Prova con un altro nome' 
+              : 'Non ci sono debiti pendenti tra gli utenti'
+            }
+          </p>
         </div>
       ) : (
         <>
           <div className="balances-grid">
-            {activeBalances.map((balance, index) => (
+            {filteredActiveBalances.map((balance, index) => ( 
               <BalanceCard
                 key={index}
                 balance={balance}

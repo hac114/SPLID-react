@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import "./GroupForm.css";
 
-const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) => {
+const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser, onNavigateToUsers }) => {
   const [groupName, setGroupName] = useState(group?.name || "");
   const [description, setDescription] = useState(group?.description || "");
   const [participants, setParticipants] = useState(group?.participants || []);
   const [newParticipant, setNewParticipant] = useState('');
+  const [showUserRedirect, setShowUserRedirect] = useState(false);
+  const [pendingParticipant, setPendingParticipant] = useState('');
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,22 +23,24 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) 
     }
 
     const newGroup = {
-      id: Date.now(),
+      id: group?.id || Date.now(), // 👈 Mantieni ID se modifica
       name: groupName.trim(),
       description: description.trim(),
       participants: participants,
-      total: 0,
-      expenses: [],
-      createdAt: new Date().toISOString(),
+      total: group?.total || 0,
+      expenses: group?.expenses || [],
+      createdAt: group?.createdAt || new Date().toISOString(),
     };
 
     onGroupAdded(newGroup);
 
-    // Reset form
-    setGroupName("");
-    setDescription("");
-    setParticipants([]);
-    setNewParticipant("");
+    // Reset form solo se non è modifica
+    if (!group) {
+      setGroupName("");
+      setDescription("");
+      setParticipants([]);
+      setNewParticipant("");
+    }
   };
 
   const addParticipant = () => {
@@ -52,12 +56,16 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) 
       return;
     }
     
-    // Aggiungi alla rubrica se non esiste
+    // 👇 CORREGGI: Verifica se l'utente esiste
     const userExists = users.some(user => user.name === trimmedName);
-    if (!userExists && onAddNewUser) {
-      onAddNewUser(trimmedName);
+    
+    if (!userExists) {
+      setPendingParticipant(trimmedName);
+      setShowUserRedirect(true);
+      return;
     }
     
+    // Se esiste, aggiungi normalmente
     setParticipants([...participants, trimmedName]);
     setNewParticipant("");
   };
@@ -83,7 +91,42 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) 
   return (
     <div className="group-form-overlay">
       <div className="group-form-container">
-        <h3>Crea Nuovo Gruppo</h3>
+        <h3>{group ? 'Modifica Gruppo' : 'Crea Nuovo Gruppo'}</h3>
+
+        {showUserRedirect && (
+          <div className="user-redirect-modal">
+            <div className="modal-content">
+              <h4>Utente non trovato</h4>
+              <p>
+                L'utente "<strong>{pendingParticipant}</strong>" non esiste nella rubrica.
+              </p>
+              <p>Vuoi aggiungerlo alla rubrica utenti?</p>
+              
+              <div className="modal-actions">
+                <button 
+                  onClick={() => setShowUserRedirect(false)}
+                  className="btn-cancel"
+                >
+                  Annulla
+                </button>
+                <button 
+                  onClick={() => {
+                    onCancel(); // Chiudi il form gruppo
+                    if (onNavigateToUsers) {
+                      onNavigateToUsers(pendingParticipant); // 👈 Reindirizza alla sezione utenti
+                    } else {
+                      console.error('onNavigateToUsers non è definita!');
+                      alert(`Vai alla sezione utenti per creare: ${pendingParticipant}`);
+                    }
+                  }}
+                  className="btn-confirm"
+                >
+                  ✅ Sì, aggiungi alla rubrica
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="group-form">
           <div className="form-group">
@@ -156,7 +199,7 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) 
             {/* Lista partecipanti selezionati */}
             {participants.length > 0 && (
               <div className="participants-list">
-                <h4>Partecipanti aggiunti:</h4>
+                <h4>Partecipanti aggiunti ({participants.length}):</h4>
                 <ul>
                   {participants.map((participant, index) => (
                     <li key={index} className="participant-item">
@@ -165,6 +208,7 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) 
                         type="button"
                         onClick={() => removeParticipant(index)}
                         className="remove-participant-btn"
+                        title="Rimuovi partecipante"
                       >
                         ×
                       </button>
@@ -180,7 +224,7 @@ const GroupForm = ({ users = [], group, onGroupAdded, onCancel, onAddNewUser }) 
               Annulla
             </button>
             <button type="submit" className="btn-submit">
-              Crea Gruppo
+              {group ? 'Aggiorna' : 'Crea'} Gruppo
             </button>
           </div>
         </form>

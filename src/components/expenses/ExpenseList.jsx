@@ -1,12 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./ExpenseList.css";
-import ExpenseForm from "../expenses/ExpenseForm"; // 👈 ASSICURATI CHE L'IMPORT SIA CORRETTO
+import ExpenseForm from "../expenses/ExpenseForm";
 
 const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpense }) => {
   if (!group) return null;
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [editingExpense, setEditingExpense] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // 👇 DEBUG
+  useEffect(() => {
+    console.log('ExpenseList - Group object changed:', group);
+  }, [group]);
+
+  useEffect(() => {
+    console.log('ExpenseList - Expenses array changed:', group.expenses);
+  }, [group.expenses]);
+
+  useEffect(() => {
+    setRefreshKey(prev => prev + 1);
+  }, [group]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("it-IT", {
@@ -54,6 +69,13 @@ const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpe
     ? group.expenses 
     : group.expenses.filter(expense => expense.category === selectedCategory);
 
+  // 👇 FILTRO PER RICERCA
+  const searchedExpenses = filteredExpenses.filter(expense =>
+    expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    expense.payer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    expense.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const availableCategories = ['all', ...new Set(group.expenses.map(expense => expense.category))];
 
   const handleDelete = (expenseId) => {
@@ -63,20 +85,18 @@ const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpe
   };
 
   const handleEdit = (expense) => {
-    console.log('Modifica spesa:', expense); // 👈 DEBUG
+    console.log('Modifica spesa:', expense);
     setEditingExpense(expense);
   };
 
-  const handleSaveEdit = (updatedExpense) => {
-    onEditExpense(updatedExpense);
-    setEditingExpense(null);
-  };
-
   return (
-    <div className="expense-list-overlay">
+    <div className="expense-list-overlay" key={refreshKey}>
       <div className="expense-list-container">
         <div className="expense-list-header">
-          <h3>Spese di: {group.name}</h3>
+          <div className="header-title">
+            <h3>Spese di: {group.name}</h3>
+            <span className="expense-count">{group.expenses.length} spese</span>
+          </div>
           <div className="header-actions">
             <button onClick={onAddExpense} className="btn-add-expense">
               + Aggiungi Spesa
@@ -87,36 +107,75 @@ const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpe
           </div>
         </div>
 
+        {/* 👇 SEARCH BAR */}
+        <div className="expense-search-box">
+          <input
+            type="text"
+            placeholder="Cerca spese per descrizione, pagante o categoria..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+        </div>
+
         {group.expenses.length > 0 && (
-          <div className="category-filter">
-            <label htmlFor="categoryFilter">Filtra per categoria:</label>
-            <select
-              id="categoryFilter"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              {availableCategories.map(category => (
-                <option key={category} value={category}>
-                  {category === 'all' ? 'Tutte le categorie' : `${getCategoryIcon(category)} ${category}`}
-                </option>
-              ))}
-            </select>
+          <div className="filters-container">
+            <div className="category-filter">
+              <label htmlFor="categoryFilter">Filtra per categoria:</label>
+              <select
+                id="categoryFilter"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                {availableCategories.map(category => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'Tutte le categorie' : `${getCategoryIcon(category)} ${category}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {(searchTerm || selectedCategory !== 'all') && (
+              <div className="active-filters">
+                <small>
+                  Filtri attivi: 
+                  {searchTerm && ` "${searchTerm}"`}
+                  {searchTerm && selectedCategory !== 'all' && ' • '}
+                  {selectedCategory !== 'all' && ` ${selectedCategory}`}
+                </small>
+                <button 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('all');
+                  }}
+                  className="clear-filters-btn"
+                >
+                  ❌
+                </button>
+              </div>
+            )}
           </div>
         )}
 
         <div className="expense-list-content">
-          {filteredExpenses.length === 0 ? (
+          {searchedExpenses.length === 0 ? (
             <div className="no-expenses">
               <p>
-                {selectedCategory === 'all' 
-                  ? 'Nessuna spesa registrata' 
-                  : `Nessuna spesa nella categoria "${selectedCategory}"`}
+                {searchTerm || selectedCategory !== 'all' 
+                  ? 'Nessuna spesa trovata con i filtri attivi' 
+                  : 'Nessuna spesa registrata'
+                }
               </p>
-              <small>Clicca su "Aggiungi Spesa" per inserire la prima</small>
+              <small>
+                {searchTerm || selectedCategory !== 'all'
+                  ? 'Prova a modificare i filtri di ricerca'
+                  : 'Clicca su "Aggiungi Spesa" per inserire la prima'
+                }
+              </small>
             </div>
           ) : (
             <div className="expenses">
-              {filteredExpenses.map((expense) => (
+              {searchedExpenses.map((expense) => (
                 <div key={expense.id} className="expense-item">
                   <div className="expense-main">
                     <div className="expense-description">
@@ -175,33 +234,27 @@ const ExpenseList = ({ group, onClose, onAddExpense, onDeleteExpense, onEditExpe
           <div className="total-expenses">
             <strong>Totale spese:</strong>
             <span>{formatAmount(
-              filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0)
+              searchedExpenses.reduce((sum, expense) => sum + expense.amount, 0)
             )}</span>
           </div>
           <div className="total-count">
             <strong>Numero spese:</strong>
-            <span>{filteredExpenses.length}</span>
+            <span>{searchedExpenses.length}</span>
           </div>
-          {selectedCategory !== 'all' && (
-            <div className="filter-info">
-              <small>Filtrato per: {selectedCategory}</small>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* 👇 UNICO MODAL - RIMOSSO IL DOPPIO MODAL */}
       {editingExpense && (
         <ExpenseForm
-          groups={[group]} // Solo il gruppo corrente
-          expense={editingExpense} // Spesa da modificare
+          groups={[group]}
+          expense={editingExpense}
           onExpenseAdded={(updatedExpense) => {
-            console.log('Spesa aggiornata:', updatedExpense); // 👈 DEBUG
+            console.log('Spesa aggiornata:', updatedExpense);
             onEditExpense(updatedExpense);
             setEditingExpense(null);
           }}
           onCancel={() => {
-            console.log('Modifica annullata'); // 👈 DEBUG
+            console.log('Modifica annullata');
             setEditingExpense(null);
           }}
         />

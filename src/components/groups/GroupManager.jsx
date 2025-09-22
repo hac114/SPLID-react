@@ -12,7 +12,8 @@ const GroupManager = ({
   onUpdateGroup,
   onDeleteGroup,
   onAddExpense, 
-  onAddNewUser 
+  onAddNewUser,
+  onNavigateToUsers 
 }) => {
   const [showGroupForm, setShowGroupForm] = useState(false);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
@@ -20,6 +21,15 @@ const GroupManager = ({
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedGroupForList, setSelectedGroupForList] = useState(null);
   const [editingGroup, setEditingGroup] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredGroups = groups.filter(group =>
+    group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    group.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    group.participants.some(participant => 
+      participant.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   const handleAddGroup = (newGroup) => {
     console.log('Nuovo gruppo ricevuto:', newGroup);
@@ -90,6 +100,15 @@ const GroupManager = ({
     handleDeleteGroup(group.id, group.name);
   };
 
+  const handleUserRedirect = (userName) => {
+    console.log('Redirecting to users with:', userName);
+    if (onNavigateToUsers) {
+      onNavigateToUsers(userName); // 👈 QUI SI PASSA IL NOME
+    } else {
+      console.error('onNavigateToUsers is not defined!');
+    }
+  };
+
   return (    
     <div className="group-manager">
       <div className="group-manager-header">
@@ -102,8 +121,18 @@ const GroupManager = ({
         </button>
       </div>
 
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Cerca gruppi per nome, descrizione o partecipante..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+      </div>
+
       <div className="groups-grid">
-        {groups.map((group) => (
+        {filteredGroups.map((group) => (
           <div
             key={group.id}
             className="group-card"
@@ -163,7 +192,19 @@ const GroupManager = ({
               + Aggiungi Spesa
             </button>
           </div>
-        ))}        
+        ))}
+
+        {filteredGroups.length === 0 && (
+          <div className="no-groups">
+            <p>{searchTerm ? 'Nessun gruppo trovato' : 'Nessun gruppo disponibile'}</p>
+            <small>
+              {searchTerm 
+                ? 'Prova con un altro termine di ricerca' 
+                : 'Clicca su "Nuovo Gruppo" per crearne uno'
+              }
+            </small>
+          </div>
+        )}
       </div>
 
       {showGroupForm && (
@@ -172,6 +213,7 @@ const GroupManager = ({
           onGroupAdded={handleAddGroup}
           onCancel={() => setShowGroupForm(false)}
           onAddNewUser={onAddNewUser}
+          onNavigateToUsers={handleUserRedirect} 
         />
       )}
 
@@ -182,6 +224,7 @@ const GroupManager = ({
           onGroupAdded={handleUpdateGroup}
           onCancel={() => setEditingGroup(null)}
           onAddNewUser={onAddNewUser}
+          onNavigateToUsers={handleUserRedirect} 
         />
       )}
 

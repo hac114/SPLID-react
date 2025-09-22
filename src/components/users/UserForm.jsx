@@ -1,14 +1,24 @@
 import { useState, useEffect} from 'react';
 import './UserForm.css';
 
-const UserForm = ({ user, onSave, onCancel }) => {
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+const UserForm = ({ user, onSave, onCancel, preFillName }) => {
+  const [name, setName] = useState(user?.name || preFillName || ''); // 👈 USA preFillName
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+
+  // 👇 EFFETTO PER PRE-COMPILARE AUTOMATICAMENTE
+  useEffect(() => {
+    if (preFillName && !user) {
+      setName(preFillName);
+      // Auto-genera email e telefono basati sul nome
+      setEmail(`${preFillName.toLowerCase().replace(/\s+/g, '.')}@email.com`);
+      setPhone('+39 000 000 0000');
+    }
+  }, [preFillName, user]);
 
   useEffect(() => {
     if (user) {
-      setUserName(user.name || '');
+      setName(user.name || '');
       setEmail(user.email || '');
       setPhone(user.phone || '');
     }
@@ -17,14 +27,14 @@ const UserForm = ({ user, onSave, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (!userName.trim()) {
+    if (!name.trim()) {
       alert('Inserisci un nome per l\'utente!');
       return;
     }
 
     const newUser = {
       id: user ? user.id : Date.now(), // 👈 MODIFICA: se c'è user usa il suo id
-      name: userName.trim(),
+      name: name.trim(),
       email: email.trim(),
       phone: phone.trim(),
       groups: user ? user.groups : [], // 👈 MODIFICA: mantieni i gruppi esistenti
@@ -45,12 +55,12 @@ const UserForm = ({ user, onSave, onCancel }) => {
         
         <form onSubmit={handleSubmit} className="user-form">
           <div className="form-group">
-            <label htmlFor="userName">Nome Utente *</label>
+            <label htmlFor="name">Nome Utente *</label>
             <input
               type="text"
-              id="userName"
-              value={userName}             
-              onChange={(e) => setUserName(e.target.value)}
+              id="name"
+              value={name}             
+              onChange={(e) => setName(e.target.value)}
               placeholder="Nome e cognome"
               required
             />

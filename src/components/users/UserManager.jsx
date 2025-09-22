@@ -1,16 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './UserManager.css';
 import UserForm from './UserForm';
 import UserCard from './UserCard';
 
-const UserManager = ({ users, onCreateUser, onUpdateUser, onDeleteUser }) => {
+const UserManager = ({ users, onCreateUser, onUpdateUser, onDeleteUser, preFillUserName }) => {
   const [showUserForm, setShowUserForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // 👇 DEBUG - Controlla se la prop arriva
+  console.log('UserManager - preFillUserName:', preFillUserName);
+
+  useEffect(() => {
+    console.log('useEffect triggered - preFillUserName:', preFillUserName);
+    console.log('showUserForm current value:', showUserForm);
+    
+    if (preFillUserName) {
+      console.log('Opening form for:', preFillUserName);
+      setShowUserForm(true);
+    }
+  }, [preFillUserName]);
+
   const handleAddUser = (newUser) => {
     onCreateUser(newUser);
-    setShowUserForm(false);
+    setShowUserForm(false);    
     alert(`Utente "${newUser.name}" aggiunto con successo!`);
   };
 
@@ -79,7 +92,10 @@ const UserManager = ({ users, onCreateUser, onUpdateUser, onDeleteUser }) => {
       {showUserForm && (
         <UserForm
           onSave={handleAddUser}
-          onCancel={() => setShowUserForm(false)}
+          onCancel={() => {
+            setShowUserForm(false);
+          }}
+          preFillName={preFillUserName} // 👈 PASSALA AL FORM
         />
       )}
 
